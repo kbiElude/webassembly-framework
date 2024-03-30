@@ -5,5 +5,5 @@
 	path = deps/imgui/imgui
 	url = https://github.com/ocornut/imgui
 [submodule "deps/imgui"]
-	path = deps/imgui_temp
+	path = deps/imgui/repo
 	url = https://github.com/ocornut/imgui
