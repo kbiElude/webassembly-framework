@@ -36,6 +36,8 @@
 
 #include <GLFW/glfw3.h>
 
+static std::string g_reported_error_string;
+
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -49,8 +51,8 @@ static void glfw_error_callback(int error, const char* description)
 
 int main(int, char**)
 {
-    int         result           = 1;
-    GLFWwindow* window_ptr       = nullptr;
+    int         result     = 1;
+    GLFWwindow* window_ptr = nullptr;
 
     glfwSetErrorCallback(glfw_error_callback);
 
@@ -132,13 +134,8 @@ int main(int, char**)
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame   ();
-        ImGui::NewFrame           ();
-        {
-            imgui_callback();
-        }
 
-        // Rendering
-        ImGui::Render();
+        ImGui::NewFrame();
         {
             int display_h = 0;
             int display_w = 0;
@@ -147,8 +144,42 @@ int main(int, char**)
                                   &display_w,
                                   &display_h);
 
-            render_callback(display_w,
-                            display_h);
+            if (g_reported_error_string.size() == 0)
+            {
+                // Let the app record imgui commands as needed..
+                imgui_callback();
+
+                // Follow up with a rendering callback.
+                ImGui::Render();
+
+                {
+
+                    render_callback(display_w,
+                                    display_h);
+                }
+            }
+            else
+            {
+                // Show the panic window
+                ImVec2 window_size;
+
+                ImGui::Begin("I give up.", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize);
+                {
+                    ImGui::Text("An error was reported by the app: %s",
+                                g_reported_error_string.c_str() );
+
+                    window_size = ImGui::GetWindowSize();
+
+                    ImGui::SetWindowPos(ImVec2( (display_w - window_size.x) / 2, (display_h - window_size.y) / 2) );
+                }
+                ImGui::End();
+
+                // Center it.
+
+                ImGui::Render();
+
+                glClear(GL_COLOR_BUFFER_BIT);
+            }
         }
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData() );
 
@@ -169,4 +200,12 @@ int main(int, char**)
     result = 0;
 end:
     return result;
+}
+
+void report_error(const std::string& in_error)
+{
+    if (g_reported_error_string.size() == 0)
+    {
+        g_reported_error_string = in_error;
+    }
 }

@@ -52,8 +52,6 @@ ShaderUniquePtr Shader::create(const ShaderStage& in_shader_stage,
 
     if (!result_ptr->init() )
     {
-        assert(false);
-
         result_ptr.reset();
     }
 
@@ -71,7 +69,7 @@ bool Shader::init()
 
     if (m_id == 0)
     {
-        assert(m_id != 0);
+        report_error("glCreateShader() return a shader with zero id.");
 
         goto end;
     }
@@ -114,7 +112,9 @@ bool Shader::init()
                               &info_log_excl_terminator,
                                reinterpret_cast<GLchar*>(info_log_u8_vec.data() ));
 
-            assert(compile_status == GL_TRUE);
+            report_error("Shader failed to compile due to the following error:\n\n" +
+                         std::string(info_log_data_ptr) );
+
             goto end;
         }
     }

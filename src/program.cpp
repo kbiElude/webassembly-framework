@@ -52,8 +52,6 @@ ProgramUniquePtr Program::create(const Shader* in_vs_ptr,
 
     if (!result_ptr->init() )
     {
-        assert(false);
-
         result_ptr.reset();
     }
 
@@ -68,7 +66,7 @@ bool Program::init()
 
     if (m_id == 0)
     {
-        assert(m_id != 0);
+        report_error("glCreateProgram() returned an ID of 0.");
 
         goto end;
     }
@@ -87,7 +85,7 @@ bool Program::init()
 
         if (link_status != GL_TRUE)
         {
-            assert(link_status == GL_TRUE);
+            report_error("Program failed to link.");
 
             goto end;
         }

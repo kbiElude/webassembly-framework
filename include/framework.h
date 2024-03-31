@@ -36,6 +36,8 @@
     #include <glad/glad.h>
 #endif
 
+void report_error(const std::string& in_error);
+
 extern void imgui_callback ();
 extern void render_callback(const int& in_width, const int& in_height);
 
