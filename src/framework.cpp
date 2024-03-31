@@ -23,7 +23,7 @@
 
 /* NOTE: Code below is a mash-up of code grabbed from emscripten and imgui examples.
  *       Nothing exciting in here. Just the most basic stuff needed to run actual app
- *       under both Windows and in web browsers befriended to WebAssembly and ES3.1 support.
+ *       under both Windows and in web browsers befriended to WebAssembly and ES2.0 support.
  */
 #include "framework.h"
 #include "imgui_impl_glfw.h"
@@ -62,7 +62,7 @@ int main(int, char**)
     }
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API,            GLFW_OPENGL_ES_API);
 
     // Create window with graphics context
