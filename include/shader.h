@@ -23,20 +23,49 @@
     SOFTWARE.
 
 */
-#if !defined(FRAMEWORK_H)
-#define FRAMEWORK_H
+#if !defined(SHADER_H)
+#define SHADER_H
 
-#include <memory>
-#include <string>
-#include <stdint.h>
+#include "framework.h"
 
-#ifdef __EMSCRIPTEN__
-    #include <GLES3/gl3.h>
-#else
-    #include <glad/glad.h>
-#endif
+/* Forward decls */
+class                           Shader;
+typedef std::unique_ptr<Shader> ShaderUniquePtr;
 
-extern void imgui_callback ();
-extern void render_callback(const int& in_width, const int& in_height);
+enum class ShaderStage : uint8_t
+{
+    FRAGMENT,
+    VERTEX,
 
-#endif /* FRAMEWORK_H */
+    UNKNOWN
+};
+
+class Shader
+{
+public:
+    /* Public functions */
+    static ShaderUniquePtr create(const ShaderStage& in_shader_stage,
+                                  const std::string& in_glsl);
+
+    GLuint get_id() const
+    {
+        return m_id;
+    }
+
+    ~Shader();
+
+private:
+    /* Private functions */
+    Shader(const ShaderStage& in_shader_stage,
+           const std::string& in_glsl);
+
+    bool init();
+
+    /* Private Variables */
+    GLuint m_id;
+
+    std::string       m_glsl;
+    const ShaderStage m_shader_stage;
+};
+
+#endif /* SHADER_H */

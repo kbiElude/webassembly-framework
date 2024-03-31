@@ -84,7 +84,11 @@ endif()
 
 
 file(GLOB sourceFiles include/framework.h
-                      src/framework.cpp)
+                      include/program.h
+                      include/shader.h
+                      src/framework.cpp
+                      src/program.cpp
+                      src/shader.cpp)
 
 add_subdirectory(deps/imgui)
 add_library     (webassembly-framework STATIC ${sourceFiles})

@@ -23,20 +23,42 @@
     SOFTWARE.
 
 */
-#if !defined(FRAMEWORK_H)
-#define FRAMEWORK_H
+#if !defined(PROGRAM_H)
+#define PROGRAM_H
 
-#include <memory>
-#include <string>
-#include <stdint.h>
+#include "framework.h"
+#include "shader.h"
 
-#ifdef __EMSCRIPTEN__
-    #include <GLES3/gl3.h>
-#else
-    #include <glad/glad.h>
-#endif
+/* Forward decls */
+class                            Program;
+typedef std::unique_ptr<Program> ProgramUniquePtr;
 
-extern void imgui_callback ();
-extern void render_callback(const int& in_width, const int& in_height);
+class Program
+{
+public:
+    /* Public functions */
+    static ProgramUniquePtr create(const Shader* in_vs_ptr,
+                                   const Shader* in_fs_ptr);
 
-#endif /* FRAMEWORK_H */
+    GLuint get_id() const
+    {
+        return m_id;
+    }
+
+    ~Program();
+
+private:
+    /* Private functions */
+    Program(const Shader* in_vs_ptr,
+            const Shader* in_fs_ptr);
+
+    bool init();
+
+    /* Private Variables */
+    GLuint m_id;
+
+    const Shader* m_fs_ptr;
+    const Shader* m_vs_ptr;
+};
+
+#endif /* PROGRAM_H */
