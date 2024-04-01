@@ -29,9 +29,11 @@
 #include "imgui_impl_glfw.h"
 #include "imgui_impl_opengl3.h"
 #include <stdio.h>
+#include <vector>
 
 #ifdef __EMSCRIPTEN__
     #include "emscripten_mainloop_stub.h"
+    #include <unistd.h>
 #endif
 
 #include <GLFW/glfw3.h>
@@ -47,14 +49,72 @@ void Framework::report_error(const std::string& in_error)
     }
 }
 
-static void glfw_error_callback(int error, const char* description)
+static void glfw_drop_callback(GLFWwindow* window,
+                               int         n_paths,
+                               const char* paths[])
 {
-    fprintf(stderr,
-            "GLFW Error %d: %s\n",
-            error,
-            description);
+    /* Cache each file and report to the app. */
+    for (int32_t n_path = 0;
+                 n_path < n_paths;
+               ++n_path)
+    {
+        FILE*       file_handle = ::fopen(paths[n_path],
+                                          "rb");
+        std::string file_name   = std::string(paths[n_path]);
+        long        file_size   = 0;
 
-    assert(false);
+        if (file_handle == nullptr)
+        {
+            Framework::report_error("Failed to open [" + file_name + "].");
+
+            goto end;
+        }
+
+        ::fseek(file_handle,
+                0L,
+                SEEK_END);
+
+        file_size = ::ftell(file_handle);
+
+        ::fseek(file_handle,
+                0L,
+                SEEK_SET);
+
+        if (file_size > 0)
+        {
+            Uint8VectorUniquePtr file_data_u8_vec_ptr(new std::vector<uint8_t>(file_size) );
+
+            if (::fread(file_data_u8_vec_ptr->data(),
+                        static_cast<size_t>       (file_size),
+                        1u,
+                        file_handle) != 1)
+            {
+                Framework::report_error("Failed to read drag & dropped file [" + file_name + "].");
+
+                goto end;
+            }
+
+            ::fclose(file_handle);
+
+            #if defined(__EMSCRIPTEN__)
+            {
+                ::unlink(paths[n_path]);
+            }
+            #endif
+
+            FrameworkApp::on_file_dropped_callback(file_name,
+                                                   std::move(file_data_u8_vec_ptr) );
+        }
+    }
+
+end:
+    ;
+}
+
+static void glfw_error_callback(int         error,
+                                const char* description)
+{
+    Framework::report_error("GLFW reported an error: " + std::string(description) );
 }
 
 int main(int, char**)
@@ -89,6 +149,7 @@ int main(int, char**)
         goto end;
     }
 
+    glfwSetDropCallback   (window_ptr, glfw_drop_callback);
     glfwMakeContextCurrent(window_ptr);
     glfwSwapInterval      (1); // Enable vsync
 

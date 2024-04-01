@@ -29,12 +29,15 @@
 #include <memory>
 #include <string>
 #include <stdint.h>
+#include <vector>
 
 #ifdef __EMSCRIPTEN__
     #include <GLES3/gl3.h>
 #else
     #include <glad/glad.h>
 #endif
+
+typedef std::unique_ptr<std::vector<uint8_t> > Uint8VectorUniquePtr;
 
 namespace Framework
 {
@@ -43,8 +46,11 @@ namespace Framework
 
 namespace FrameworkApp
 {
-    extern void imgui_callback ();
-    extern void render_callback(const int& in_width, const int& in_height);
+    extern void imgui_callback          ();
+    extern void on_file_dropped_callback(const std::string&   in_filename,
+                                         Uint8VectorUniquePtr in_data_u8_vec_ptr);
+    extern void render_callback         (const int&           in_width,
+                                         const int&           in_height);
 }
 
 #endif /* FRAMEWORK_H */
