@@ -38,6 +38,7 @@
 
 #include <GLFW/glfw3.h>
 
+static auto        g_app_ptr               = create_app();
 static std::string g_reported_error_string;
 
 
@@ -54,6 +55,8 @@ static void glfw_drop_callback(GLFWwindow* window,
                                const char* paths[])
 {
     /* Cache each file and report to the app. */
+    assert(g_app_ptr != nullptr);
+
     for (int32_t n_path = 0;
                  n_path < n_paths;
                ++n_path)
@@ -102,8 +105,8 @@ static void glfw_drop_callback(GLFWwindow* window,
             }
             #endif
 
-            FrameworkApp::on_file_dropped_callback(file_name,
-                                                   std::move(file_data_u8_vec_ptr) );
+            g_app_ptr->on_file_dropped_callback(file_name,
+                                                std::move(file_data_u8_vec_ptr) );
         }
     }
 
@@ -143,6 +146,13 @@ int main(int, char**)
                                   nullptr); /* share   */
 
     if (window_ptr == nullptr)
+    {
+        assert(false);
+
+        goto end;
+    }
+
+    if (g_app_ptr == nullptr)
     {
         assert(false);
 
@@ -216,13 +226,13 @@ int main(int, char**)
             if (g_reported_error_string.size() == 0)
             {
                 // Let the app record imgui commands as needed..
-                FrameworkApp::imgui_callback();
+                g_app_ptr->configure_imgui();
 
-                // Follow up with a rendering callback.
                 ImGui::Render();
 
-                FrameworkApp::render_callback(display_w,
-                                              display_h);
+                // Follow up with a rendering callback.
+                g_app_ptr->render_frame(display_w,
+                                        display_h);
             }
             else
             {
@@ -254,6 +264,8 @@ int main(int, char**)
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_END;
 #endif
+
+    g_app_ptr.reset();
 
     // Cleanup
     ImGui_ImplOpenGL3_Shutdown();

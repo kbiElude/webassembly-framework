@@ -37,20 +37,39 @@
     #include <glad/glad.h>
 #endif
 
+/* Forward decls */
+class IFrameworkApp;
+
+/* Typedefs */
+typedef std::unique_ptr<IFrameworkApp>         FrameworkAppUniquePtr;
 typedef std::unique_ptr<std::vector<uint8_t> > Uint8VectorUniquePtr;
 
+/* Global functions */
 namespace Framework
 {
     void report_error(const std::string& in_error);
 }
 
-namespace FrameworkApp
+/* App interface */
+class IFrameworkApp
 {
-    extern void imgui_callback          ();
-    extern void on_file_dropped_callback(const std::string&   in_filename,
-                                         Uint8VectorUniquePtr in_data_u8_vec_ptr);
-    extern void render_callback         (const int&           in_width,
-                                         const int&           in_height);
-}
+public:
+    virtual ~IFrameworkApp()
+    {
+        /* Stub */
+    }
+
+    virtual void configure_imgui()                     = 0;
+    virtual void render_frame   (const int& in_width,
+                                 const int& in_height) = 0;
+
+    virtual void on_file_dropped_callback(const std::string&   in_filename,
+                                          Uint8VectorUniquePtr in_data_u8_vec_ptr)
+    {
+        /* Stub */
+    }
+};
+
+extern FrameworkAppUniquePtr create_app();
 
 #endif /* FRAMEWORK_H */
