@@ -27,8 +27,8 @@
 #include <assert.h>
 #include <vector>
 
-Shader::Shader(const ShaderStage& in_shader_stage,
-               const std::string& in_glsl)
+Framework::Shader::Shader(const ShaderStage& in_shader_stage,
+                          const std::string& in_glsl)
     :m_glsl        (in_glsl),
      m_id          (0),
      m_shader_stage(in_shader_stage)
@@ -36,7 +36,7 @@ Shader::Shader(const ShaderStage& in_shader_stage,
     /* Stub */
 }
 
-Shader::~Shader()
+Framework::Shader::~Shader()
 {
     if (m_id != 0)
     {
@@ -44,8 +44,8 @@ Shader::~Shader()
     }
 }
 
-ShaderUniquePtr Shader::create(const ShaderStage& in_shader_stage,
-                               const std::string& in_glsl)
+Framework::ShaderUniquePtr Framework::Shader::create(const ShaderStage& in_shader_stage,
+                                                     const std::string& in_glsl)
 {
     ShaderUniquePtr result_ptr(new Shader(in_shader_stage,
                                           in_glsl) );
@@ -58,7 +58,7 @@ ShaderUniquePtr Shader::create(const ShaderStage& in_shader_stage,
     return result_ptr;
 }
 
-bool Shader::init()
+bool Framework::Shader::init()
 {
     bool       result          = false;
     const auto shader_stage_gl = (m_shader_stage == ShaderStage::FRAGMENT) ? GL_FRAGMENT_SHADER

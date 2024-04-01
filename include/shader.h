@@ -28,44 +28,47 @@
 
 #include "framework.h"
 
-/* Forward decls */
-class                           Shader;
-typedef std::unique_ptr<Shader> ShaderUniquePtr;
-
-enum class ShaderStage : uint8_t
+namespace Framework
 {
-    FRAGMENT,
-    VERTEX,
+    /* Forward decls */
+    class                           Shader;
+    typedef std::unique_ptr<Shader> ShaderUniquePtr;
 
-    UNKNOWN
-};
-
-class Shader
-{
-public:
-    /* Public functions */
-    static ShaderUniquePtr create(const ShaderStage& in_shader_stage,
-                                  const std::string& in_glsl);
-
-    GLuint get_id() const
+    enum class ShaderStage : uint8_t
     {
-        return m_id;
-    }
+        FRAGMENT,
+        VERTEX,
 
-    ~Shader();
+        UNKNOWN
+    };
 
-private:
-    /* Private functions */
-    Shader(const ShaderStage& in_shader_stage,
-           const std::string& in_glsl);
+    class Shader
+    {
+    public:
+        /* Public functions */
+        static ShaderUniquePtr create(const ShaderStage& in_shader_stage,
+                                      const std::string& in_glsl);
 
-    bool init();
+        GLuint get_id() const
+        {
+            return m_id;
+        }
 
-    /* Private Variables */
-    GLuint m_id;
+        ~Shader();
 
-    std::string       m_glsl;
-    const ShaderStage m_shader_stage;
-};
+    private:
+        /* Private functions */
+        Shader(const ShaderStage& in_shader_stage,
+               const std::string& in_glsl);
+
+        bool init();
+
+        /* Private Variables */
+        GLuint m_id;
+
+        std::string       m_glsl;
+        const ShaderStage m_shader_stage;
+    };
+}
 
 #endif /* SHADER_H */

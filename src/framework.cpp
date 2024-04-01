@@ -39,6 +39,14 @@
 static std::string g_reported_error_string;
 
 
+void Framework::report_error(const std::string& in_error)
+{
+    if (g_reported_error_string.size() == 0)
+    {
+        g_reported_error_string = in_error;
+    }
+}
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr,
@@ -147,16 +155,13 @@ int main(int, char**)
             if (g_reported_error_string.size() == 0)
             {
                 // Let the app record imgui commands as needed..
-                imgui_callback();
+                FrameworkApp::imgui_callback();
 
                 // Follow up with a rendering callback.
                 ImGui::Render();
 
-                {
-
-                    render_callback(display_w,
-                                    display_h);
-                }
+                FrameworkApp::render_callback(display_w,
+                                              display_h);
             }
             else
             {
@@ -200,12 +205,4 @@ int main(int, char**)
     result = 0;
 end:
     return result;
-}
-
-void report_error(const std::string& in_error)
-{
-    if (g_reported_error_string.size() == 0)
-    {
-        g_reported_error_string = in_error;
-    }
 }

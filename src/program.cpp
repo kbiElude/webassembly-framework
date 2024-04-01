@@ -26,8 +26,8 @@
 #include "program.h"
 #include <assert.h>
 
-Program::Program(const Shader* in_vs_ptr,
-                 const Shader* in_fs_ptr)
+Framework::Program::Program(const Shader* in_vs_ptr,
+                            const Shader* in_fs_ptr)
     :m_fs_ptr(in_fs_ptr),
      m_id    (0),
      m_vs_ptr(in_vs_ptr)
@@ -36,7 +36,7 @@ Program::Program(const Shader* in_vs_ptr,
     assert(in_vs_ptr != nullptr);
 }
 
-Program::~Program()
+Framework::Program::~Program()
 {
     if (m_id != 0)
     {
@@ -44,8 +44,8 @@ Program::~Program()
     }
 }
 
-ProgramUniquePtr Program::create(const Shader* in_vs_ptr,
-                                 const Shader* in_fs_ptr)
+Framework::ProgramUniquePtr Framework::Program::create(const Shader* in_vs_ptr,
+                                                       const Shader* in_fs_ptr)
 {
     ProgramUniquePtr result_ptr(new Program(in_vs_ptr,
                                             in_fs_ptr) );
@@ -58,7 +58,7 @@ ProgramUniquePtr Program::create(const Shader* in_vs_ptr,
     return result_ptr;
 }
 
-bool Program::init()
+bool Framework::Program::init()
 {
     bool result = false;
 

@@ -29,36 +29,39 @@
 #include "framework.h"
 #include "shader.h"
 
-/* Forward decls */
-class                            Program;
-typedef std::unique_ptr<Program> ProgramUniquePtr;
-
-class Program
+namespace Framework
 {
-public:
-    /* Public functions */
-    static ProgramUniquePtr create(const Shader* in_vs_ptr,
-                                   const Shader* in_fs_ptr);
+    /* Forward decls */
+    class                            Program;
+    typedef std::unique_ptr<Program> ProgramUniquePtr;
 
-    GLuint get_id() const
+    class Program
     {
-        return m_id;
-    }
+    public:
+        /* Public functions */
+        static ProgramUniquePtr create(const Shader* in_vs_ptr,
+                                       const Shader* in_fs_ptr);
 
-    ~Program();
+        GLuint get_id() const
+        {
+            return m_id;
+        }
 
-private:
-    /* Private functions */
-    Program(const Shader* in_vs_ptr,
-            const Shader* in_fs_ptr);
+        ~Program();
 
-    bool init();
+    private:
+        /* Private functions */
+        Program(const Shader* in_vs_ptr,
+                const Shader* in_fs_ptr);
 
-    /* Private Variables */
-    GLuint m_id;
+        bool init();
 
-    const Shader* m_fs_ptr;
-    const Shader* m_vs_ptr;
-};
+        /* Private Variables */
+        GLuint m_id;
+
+        const Shader* m_fs_ptr;
+        const Shader* m_vs_ptr;
+    };
+}
 
 #endif /* PROGRAM_H */
