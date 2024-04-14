@@ -226,7 +226,8 @@ int main(int, char**)
             if (g_reported_error_string.size() == 0)
             {
                 // Let the app record imgui commands as needed..
-                g_app_ptr->configure_imgui();
+                g_app_ptr->configure_imgui(display_w,
+                                           display_h);
 
                 ImGui::Render();
 

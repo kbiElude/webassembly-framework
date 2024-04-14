@@ -59,7 +59,8 @@ public:
         /* Stub */
     }
 
-    virtual void configure_imgui()                     = 0;
+    virtual void configure_imgui(const int& in_width,
+                                 const int& in_height) = 0;
     virtual void render_frame   (const int& in_width,
                                  const int& in_height) = 0;
 
