@@ -58,15 +58,32 @@ Framework::ProgramUniquePtr Framework::Program::create(const Shader* in_vs_ptr,
     return result_ptr;
 }
 
+GLint Framework::Program::get_uniform_location(const char* in_uniform_name_ptr) const
+{
+    GLint result = -1;
+
+    {
+        auto map_iterator = m_uniform_name_to_id_map.find(in_uniform_name_ptr);
+
+        if (map_iterator != m_uniform_name_to_id_map.end() )
+        {
+            result = map_iterator->second;
+        }
+    }
+
+    return result;
+}
+
 bool Framework::Program::init()
 {
     bool result = false;
 
+    /* Bake the program first. */
     m_id = glCreateProgram();
 
     if (m_id == 0)
     {
-        report_error("glCreateProgram() returned an ID of 0.");
+        Framework::report_error("glCreateProgram() returned an ID of 0.");
 
         goto end;
     }
@@ -85,9 +102,80 @@ bool Framework::Program::init()
 
         if (link_status != GL_TRUE)
         {
-            report_error("Program failed to link.");
+            Framework::report_error("Program failed to link.");
 
             goto end;
+        }
+    }
+
+    /* Enumerate active uniforms so that it is not necessary to call glGetUniformLocation() when rendering frames. */
+    {
+        GLint                n_active_uniforms                       = 0;
+        GLint                uniform_name_max_length_incl_terminator = 0;
+        std::vector<uint8_t> uniform_name_u8_vec;
+
+        glGetProgramiv(m_id,
+                       GL_ACTIVE_UNIFORMS,
+                      &n_active_uniforms);
+
+        {
+
+            glGetProgramiv(m_id,
+                           GL_ACTIVE_UNIFORM_MAX_LENGTH,
+                          &uniform_name_max_length_incl_terminator);
+
+            uniform_name_u8_vec.resize(uniform_name_max_length_incl_terminator);
+        }
+
+        for (uint32_t n_active_uniform = 0;
+                      n_active_uniform < n_active_uniforms;
+                    ++n_active_uniform)
+        {
+            memset(uniform_name_u8_vec.data(),
+                   0,
+                   uniform_name_max_length_incl_terminator);
+
+            {
+                GLint  uniform_size = 0;
+                GLenum uniform_type = GL_NONE;
+
+                glGetActiveUniform(m_id,
+                                   n_active_uniform,
+                                   uniform_name_max_length_incl_terminator,
+                                   nullptr, /* length */
+                                  &uniform_size,
+                                  &uniform_type,
+                                   reinterpret_cast<GLchar*>(uniform_name_u8_vec.data() ));
+            }
+
+            if (uniform_name_u8_vec.size() > 0)
+            {
+                const char* uniform_name_ptr = reinterpret_cast<GLchar*>(uniform_name_u8_vec.data() );
+                const auto  uniform_location = glGetUniformLocation     (m_id,
+                                                                         uniform_name_ptr);
+
+                if (uniform_location == -1)
+                {
+                    Framework::report_error(std::string("Invalid uniform location reported for an active uniform [") + std::string(uniform_name_ptr) + "].");
+
+                    goto end;
+                }
+
+                if (m_uniform_name_to_id_map.find(uniform_name_ptr) != m_uniform_name_to_id_map.end())
+                {
+                    Framework::report_error("Uniform [" + std::string(uniform_name_ptr) + "] reported more than once.");
+
+                    goto end;
+                }
+
+                m_uniform_name_to_id_map[uniform_name_ptr] = uniform_location;
+            }
+            else
+            {
+                Framework::report_error(std::string("Zero-sized uniform name was reported for index [") + std::to_string(n_active_uniform) + "].");
+
+                goto end;
+            }
         }
     }
 

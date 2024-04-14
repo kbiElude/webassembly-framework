@@ -28,6 +28,7 @@
 
 #include "framework.h"
 #include "shader.h"
+#include <unordered_map>
 
 namespace Framework
 {
@@ -47,6 +48,12 @@ namespace Framework
             return m_id;
         }
 
+        GLint get_uniform_location(const char*        in_uniform_name_ptr) const;
+        GLint get_uniform_location(const std::string& in_uniform_name)     const
+        {
+            return get_uniform_location(in_uniform_name.c_str() );
+        }
+
         ~Program();
 
     private:
@@ -57,7 +64,8 @@ namespace Framework
         bool init();
 
         /* Private Variables */
-        GLuint m_id;
+        GLuint                                 m_id;
+        std::unordered_map<std::string, GLint> m_uniform_name_to_id_map;
 
         const Shader* m_fs_ptr;
         const Shader* m_vs_ptr;
