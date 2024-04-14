@@ -85,10 +85,12 @@ endif()
 
 file(GLOB sourceFiles include/framework.h
                       include/program.h
+                      include/sampler.h
                       include/shader.h
                       include/texture.h
                       src/framework.cpp
                       src/program.cpp
+                      src/sampler.cpp
                       src/shader.cpp
                       src/texture.cpp)
 
