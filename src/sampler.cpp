@@ -220,6 +220,7 @@ bool Framework::Sampler::init()
         glSamplerParameteri(m_id, GL_TEXTURE_COMPARE_MODE, GL_NONE);
     }
 
+    result = true;
 end:
     return result;
 }
