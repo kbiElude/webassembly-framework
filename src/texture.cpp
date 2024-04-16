@@ -119,6 +119,22 @@ GLuint Framework::Texture::get_id()
     return m_id;
 }
 
+std::array<uint32_t, 3> Framework::Texture::get_mip_size(const uint32_t& in_n_mip) const
+{
+    std::array<uint32_t, 3> result{};
+
+    if (m_mip_size_vec.size() > in_n_mip)
+    {
+        result = m_mip_size_vec.at(in_n_mip);
+    }
+    else
+    {
+        Framework::report_error("Invalid mip index specified for Framework::Texture::get_mip_size()");
+    }
+
+    return result;
+}
+
 bool Framework::Texture::init(const bool& in_mipped)
 {
     uint32_t n_mips = 0;
@@ -136,10 +152,11 @@ bool Framework::Texture::init(const bool& in_mipped)
     }
 
     /* Determine how many mips we're going to need. */
-    while (m_mip_size_vec.size() == 0                                ||
-           m_mip_size_vec.back() != std::array<uint32_t, 3>{1, 1, 1})
+    m_mip_size_vec.push_back(m_extents);
+
+    while (m_mip_size_vec.back() != std::array<uint32_t, 3>{1, 1, 1})
     {
-        std::array<uint32_t, 3> new_mip_size;
+        std::array<uint32_t, 3> new_mip_size{};
 
         new_mip_size =
         {
