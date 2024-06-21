@@ -109,7 +109,7 @@ Framework::TextureUniquePtr Framework::Texture::create_immutable_cube(const bool
     return result_ptr;
 }
 
-GLuint Framework::Texture::get_id()
+GLuint Framework::Texture::get_id() const
 {
     if (m_id == 0)
     {
@@ -241,4 +241,9 @@ bool Framework::Texture::init(const bool& in_mipped)
     result = true;
 end:
     return result;
+}
+
+Framework::TextureType Framework::Texture::get_type() const
+{
+    return m_type;
 }

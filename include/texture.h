@@ -69,6 +69,15 @@ namespace Framework
         UNKNOWN
     };
 
+    enum class TextureType : uint8_t
+    {
+        _2D,
+        _3D,
+        CUBE,
+
+        UNKNOWN
+    };
+
     class Texture
     {
     public:
@@ -86,19 +95,11 @@ namespace Framework
 
         ~Texture();
 
-        GLuint                  get_id      ();
+        GLuint                  get_id      ()                         const;
+        TextureType             get_type    ()                         const;
         std::array<uint32_t, 3> get_mip_size(const uint32_t& in_n_mip) const;
 
     private:
-        /* Private type defs */
-        enum class TextureType : uint8_t
-        {
-            _2D,
-            _3D,
-            CUBE,
-
-            UNKNOWN
-        };
 
         /* Private functions */
         Texture(const TextureType&             in_type,
