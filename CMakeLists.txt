@@ -83,11 +83,13 @@ if (NOT EMSCRIPTEN)
 endif()
 
 
-file(GLOB sourceFiles include/framework.h
+file(GLOB sourceFiles include/framebuffer.h
+                      include/framework.h
                       include/program.h
                       include/sampler.h
                       include/shader.h
                       include/texture.h
+                      src/framebuffer.cpp
                       src/framework.cpp
                       src/program.cpp
                       src/sampler.cpp
