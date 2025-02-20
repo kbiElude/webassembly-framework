@@ -69,6 +69,12 @@ public:
     {
         /* Stub */
     }
+
+    virtual void on_scroll_callback(const double& in_xoffset,
+                                    const double& in_yoffset)
+    {
+        /* Stub */
+    }
 };
 
 extern FrameworkAppUniquePtr create_app();

@@ -120,6 +120,14 @@ static void glfw_error_callback(int         error,
     Framework::report_error("GLFW reported an error: " + std::string(description) );
 }
 
+static void glfw_scroll_callback(GLFWwindow* window,
+                                 double      xoffset,
+                                 double      yoffset)
+{
+    g_app_ptr->on_scroll_callback(xoffset,
+                                  yoffset);
+}
+
 int main(int, char**)
 {
     int         result     = 1;
@@ -160,6 +168,8 @@ int main(int, char**)
     }
 
     glfwSetDropCallback   (window_ptr, glfw_drop_callback);
+    glfwSetScrollCallback (window_ptr, glfw_scroll_callback);
+
     glfwMakeContextCurrent(window_ptr);
     glfwSwapInterval      (1); // Enable vsync
 
