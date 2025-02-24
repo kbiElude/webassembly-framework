@@ -50,6 +50,14 @@ void Framework::report_error(const std::string& in_error)
     }
 }
 
+static void glfw_cursorpos_callback(GLFWwindow* window,
+                                    double      x,
+                                    double      y)
+{
+    g_app_ptr->on_mouse_pos_callback(x,
+                                     y);
+}
+
 static void glfw_drop_callback(GLFWwindow* window,
                                int         n_paths,
                                const char* paths[])
@@ -195,6 +203,7 @@ int main(int, char**)
 
     glfwSetDropCallback       (window_ptr, glfw_drop_callback);
     glfwSetMouseButtonCallback(window_ptr, glfw_mousebutton_callback);
+    glfwSetCursorPosCallback  (window_ptr, glfw_cursorpos_callback);
     glfwSetScrollCallback     (window_ptr, glfw_scroll_callback);
 
     glfwMakeContextCurrent(window_ptr);

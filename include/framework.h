@@ -86,6 +86,12 @@ public:
         /* Stub */
     }
 
+    virtual void on_mouse_pos_callback(const double& in_x,
+                                       const double& in_y)
+    {
+        /* Stub */
+    }
+
     virtual void on_scroll_callback(const double& in_xoffset,
                                     const double& in_yoffset)
     {
