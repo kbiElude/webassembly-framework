@@ -120,6 +120,32 @@ static void glfw_error_callback(int         error,
     Framework::report_error("GLFW reported an error: " + std::string(description) );
 }
 
+static void glfw_mousebutton_callback(GLFWwindow* window,
+                                      int         button,
+                                      int         action,
+                                      int         mods)
+{
+    const bool is_pressed   = (action == GLFW_PRESS);
+    const auto mouse_button = (button == GLFW_MOUSE_BUTTON_LEFT)   ? MouseButton::LEFT
+                            : (button == GLFW_MOUSE_BUTTON_RIGHT)  ? MouseButton::RIGHT
+                            : (button == GLFW_MOUSE_BUTTON_MIDDLE) ? MouseButton::MIDDLE
+                                                                   : MouseButton::UNKNOWN;
+    double     x            = 0;
+    double     y            = 0;
+
+    glfwGetCursorPos(window,
+                    &x,
+                    &y);
+
+    if (mouse_button != MouseButton::UNKNOWN)
+    {
+        g_app_ptr->on_mouse_button_callback(x,
+                                            y,
+                                            mouse_button,
+                                            is_pressed);
+    }
+}
+
 static void glfw_scroll_callback(GLFWwindow* window,
                                  double      xoffset,
                                  double      yoffset)
@@ -167,8 +193,9 @@ int main(int, char**)
         goto end;
     }
 
-    glfwSetDropCallback   (window_ptr, glfw_drop_callback);
-    glfwSetScrollCallback (window_ptr, glfw_scroll_callback);
+    glfwSetDropCallback       (window_ptr, glfw_drop_callback);
+    glfwSetMouseButtonCallback(window_ptr, glfw_mousebutton_callback);
+    glfwSetScrollCallback     (window_ptr, glfw_scroll_callback);
 
     glfwMakeContextCurrent(window_ptr);
     glfwSwapInterval      (1); // Enable vsync

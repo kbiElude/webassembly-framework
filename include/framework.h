@@ -44,6 +44,14 @@ class IFrameworkApp;
 typedef std::unique_ptr<IFrameworkApp>         FrameworkAppUniquePtr;
 typedef std::unique_ptr<std::vector<uint8_t> > Uint8VectorUniquePtr;
 
+enum class MouseButton : uint8_t
+{
+    LEFT,
+    RIGHT,
+    MIDDLE,
+    UNKNOWN
+};
+
 /* Global functions */
 namespace Framework
 {
@@ -66,6 +74,14 @@ public:
 
     virtual void on_file_dropped_callback(const std::string&   in_filename,
                                           Uint8VectorUniquePtr in_data_u8_vec_ptr)
+    {
+        /* Stub */
+    }
+
+    virtual void on_mouse_button_callback(const double&      in_x,
+                                          const double&      in_y,
+                                          const MouseButton& in_mouse_button,
+                                          const bool&        in_is_pressed)
     {
         /* Stub */
     }
