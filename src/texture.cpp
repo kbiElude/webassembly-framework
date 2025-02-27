@@ -137,8 +137,9 @@ std::array<uint32_t, 3> Framework::Texture::get_mip_size(const uint32_t& in_n_mi
 
 bool Framework::Texture::init(const bool& in_mipped)
 {
-    uint32_t n_mips = 0;
-    bool     result = false;
+    uint32_t n_mips            = 0;
+    bool     result            = false;
+    GLenum   texture_target_gl = GL_NONE;
 
     /* Allocate an ID */
     glGenTextures(1,
@@ -185,6 +186,8 @@ bool Framework::Texture::init(const bool& in_mipped)
                                static_cast<GLenum>(m_format),
                                m_extents.at(0),
                                m_extents.at(1) );
+
+                texture_target_gl = GL_TEXTURE_2D;
             }
             else
             {
@@ -197,7 +200,10 @@ bool Framework::Texture::init(const bool& in_mipped)
                                m_extents.at(0),
                                m_extents.at(1),
                                m_extents.at(2) );
+
+                texture_target_gl = GL_TEXTURE_2D_ARRAY;
             }
+
             break;
         }
 
@@ -213,6 +219,7 @@ bool Framework::Texture::init(const bool& in_mipped)
                            m_extents.at(1),
                            m_extents.at(2) );
 
+            texture_target_gl = GL_TEXTURE_3D;
             break;
         }
 
@@ -227,6 +234,7 @@ bool Framework::Texture::init(const bool& in_mipped)
                            m_extents.at(0),
                            m_extents.at(1) );
 
+            texture_target_gl = GL_TEXTURE_CUBE_MAP;
             break;
         }
 
@@ -237,6 +245,13 @@ bool Framework::Texture::init(const bool& in_mipped)
             goto end;
         }
     }
+
+    glTexParameteri(texture_target_gl,
+                    GL_TEXTURE_MAG_FILTER,
+                    GL_NEAREST);
+    glTexParameteri(texture_target_gl,
+                    GL_TEXTURE_MIN_FILTER,
+                    GL_NEAREST);
 
     result = true;
 end:
