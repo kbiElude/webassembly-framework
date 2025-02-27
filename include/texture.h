@@ -46,6 +46,7 @@ namespace Framework
         R16_SFLOAT           = GL_R16F,
         R16_UINT             = GL_R16UI,
         R16G16_SFLOAT        = GL_RG16F,
+        R16G16_UINT          = GL_RG16UI,
         R16G16B16_SFLOAT     = GL_RGB16F,
         R16G16B16A16_SFLOAT  = GL_RGBA16F,
         R32_SFLOAT           = GL_R32F,
