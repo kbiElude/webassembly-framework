@@ -86,6 +86,12 @@ namespace Framework
         SR8G8B8_UNORM        = GL_SRGB8,
         SR8G8B8_ALPHA8_UNORM = GL_SRGB8_ALPHA8,
 
+        // GL_EXT_texture_norm16
+        R16_UNORM            = GL_R16_EXT,
+        R16G16_UNORM         = GL_RG16_EXT,
+        R16G16B16_UNORM      = GL_RGB16_EXT,
+        R16G16B16A16_UNORM   = GL_RGBA16_EXT,
+
         UNKNOWN
     };
 
