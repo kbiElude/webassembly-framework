@@ -91,9 +91,13 @@ namespace Framework
         SR8G8B8_ALPHA8_UNORM = GL_SRGB8_ALPHA8,
 
         // GL_EXT_texture_norm16
+        R16_SNORM            = GL_R16_SNORM_EXT,
         R16_UNORM            = GL_R16_EXT,
+        R16G16_SNORM         = GL_RG16_SNORM_EXT,
         R16G16_UNORM         = GL_RG16_EXT,
+        R16G16B16_SNORM      = GL_RGB16_SNORM_EXT,
         R16G16B16_UNORM      = GL_RGB16_EXT,
+        R16G16B16A16_SNORM   = GL_RGBA16_SNORM_EXT,
         R16G16B16A16_UNORM   = GL_RGBA16_EXT,
 
         UNKNOWN
