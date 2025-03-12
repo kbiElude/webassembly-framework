@@ -28,13 +28,18 @@
 
 Framework::Texture::Texture(const TextureType&             in_type,
                             const std::array<uint32_t, 3>& in_extents,
-                            const TextureFormat&           in_format)
+                            const TextureFormat&           in_format,
+                            const uint32_t*                in_opt_n_mips_ptr)
     :m_extents(in_extents),
      m_format (in_format),
      m_id     (0),
+     m_n_mips (UINT32_MAX),
      m_type   (in_type)
 {
-    /* Stub */
+    if (in_opt_n_mips_ptr != nullptr)
+    {
+        m_n_mips = *in_opt_n_mips_ptr;
+    }
 }
 
 Framework::Texture::~Texture()
@@ -51,12 +56,14 @@ Framework::Texture::~Texture()
 Framework::TextureUniquePtr Framework::Texture::create_immutable_2d(const bool&                    in_single_mip,
                                                                     const TextureFormat&           in_format,
                                                                     const std::array<uint32_t, 2>& in_extents,
-                                                                    const uint32_t&                in_n_layers)
+                                                                    const uint32_t&                in_n_layers,
+                                                                    const uint32_t*                in_opt_n_mips_ptr)
 {
     TextureUniquePtr result_ptr(
         new Texture(TextureType::_2D,
                     {in_extents.at(0), in_extents.at(1), 1},
-                    in_format)
+                    in_format,
+                    in_opt_n_mips_ptr)
     );
 
     if (!result_ptr->init(!in_single_mip) )
@@ -71,12 +78,14 @@ Framework::TextureUniquePtr Framework::Texture::create_immutable_2d(const bool& 
 
 Framework::TextureUniquePtr Framework::Texture::create_immutable_3d(const bool&                    in_single_mip,
                                                                     const TextureFormat&           in_format,
-                                                                    const std::array<uint32_t, 3>& in_extents)
+                                                                    const std::array<uint32_t, 3>& in_extents,
+                                                                    const uint32_t*                in_opt_n_mips_ptr)
 {
     TextureUniquePtr result_ptr(
         new Texture(TextureType::_3D,
                     in_extents,
-                    in_format)
+                    in_format,
+                    in_opt_n_mips_ptr)
     );
 
     if (!result_ptr->init(!in_single_mip) )
@@ -91,12 +100,14 @@ Framework::TextureUniquePtr Framework::Texture::create_immutable_3d(const bool& 
 
 Framework::TextureUniquePtr Framework::Texture::create_immutable_cube(const bool&          in_single_mip,
                                                                       const TextureFormat& in_format,
-                                                                      const uint32_t&      in_extents)
+                                                                      const uint32_t&      in_extents,
+                                                                    const uint32_t*                in_opt_n_mips_ptr)
 {
     TextureUniquePtr result_ptr(
         new Texture(TextureType::CUBE,
                     {in_extents, in_extents, 6},
-                    in_format)
+                    in_format,
+                    in_opt_n_mips_ptr)
     );
 
     if (!result_ptr->init(!in_single_mip) )
@@ -169,7 +180,21 @@ bool Framework::Texture::init(const bool& in_mipped)
         m_mip_size_vec.emplace_back(new_mip_size);
     }
 
-    n_mips = static_cast<uint32_t>(m_mip_size_vec.size() );
+    if (m_n_mips != UINT32_MAX)
+    {
+        n_mips = static_cast<uint32_t>(m_mip_size_vec.size() );
+    }
+    else
+    {
+        if (m_n_mips > n_mips)
+        {
+            Framework::report_error("Invalid number of mips specified for a texture.");
+
+            goto end;
+        }
+
+        n_mips = m_n_mips;
+    }
 
     /* Set up immutable storage */
     switch (m_type)

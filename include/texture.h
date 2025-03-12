@@ -127,13 +127,16 @@ namespace Framework
         static TextureUniquePtr create_immutable_2d  (const bool&                    in_single_mip,
                                                       const TextureFormat&           in_format,
                                                       const std::array<uint32_t, 2>& in_extents,
-                                                      const uint32_t&                in_n_layers);
+                                                      const uint32_t&                in_n_layers,
+                                                      const uint32_t*                in_opt_n_mips_ptr = nullptr);
         static TextureUniquePtr create_immutable_3d  (const bool&                    in_single_mip,
                                                       const TextureFormat&           in_format,
-                                                      const std::array<uint32_t, 3>& in_extents);
+                                                      const std::array<uint32_t, 3>& in_extents,
+                                                      const uint32_t*                in_opt_n_mips_ptr = nullptr);
         static TextureUniquePtr create_immutable_cube(const bool&                    in_single_mip,
                                                       const TextureFormat&           in_format,
-                                                      const uint32_t&                in_extents);
+                                                      const uint32_t&                in_extents,
+                                                      const uint32_t*                in_opt_n_mips_ptr = nullptr);
 
         ~Texture();
 
@@ -146,7 +149,8 @@ namespace Framework
         /* Private functions */
         Texture(const TextureType&             in_type,
                 const std::array<uint32_t, 3>& in_extents,
-                const TextureFormat&           in_format);
+                const TextureFormat&           in_format,
+                const uint32_t*                in_opt_n_mips_ptr);
 
         bool init(const bool& in_mipped);
 
@@ -157,6 +161,7 @@ namespace Framework
 
         GLuint                                m_id;
         std::vector<std::array<uint32_t, 3> > m_mip_size_vec;
+        uint32_t                              m_n_mips;
     };
 }
 #endif /* TEXTURE_H */
