@@ -108,6 +108,10 @@ namespace Framework
         //R16G16B16A16_UNORM   = GL_RGBA16_EXT,
         R16G16B16A16_UNORM   = 0x805B,
 
+        // WEBGL_compressed_texture_3tc_srgb
+        BC1_RGB_SRGB   = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
+        BC1_RGBA_SRGB  = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
+
         UNKNOWN
     };
 
