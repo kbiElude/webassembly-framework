@@ -111,6 +111,7 @@ namespace Framework
         // WEBGL_compressed_texture_3tc_srgb
         BC1_RGB_SRGB   = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
         BC1_RGBA_SRGB  = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
+        BC1_RGBA_UNORM = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
 
         UNKNOWN
     };
