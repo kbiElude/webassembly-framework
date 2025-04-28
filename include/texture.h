@@ -41,6 +41,7 @@ namespace Framework
     enum class TextureFormat
     {
         /* Core WebGL 2.0 formats */
+        D32_SFLOAT           = GL_DEPTH_COMPONENT32F,
         R10G10B10_A2         = GL_RGB10_A2,
         R11G11B10_SFLOAT     = GL_R11F_G11F_B10F,
         R16_SFLOAT           = GL_R16F,
