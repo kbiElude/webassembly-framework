@@ -72,7 +72,7 @@ static void glfw_drop_callback(GLFWwindow* window,
         FILE*       file_handle = ::fopen(paths[n_path],
                                           "rb");
         std::string file_name   = std::string(paths[n_path]);
-        long        file_size   = 0;
+        size_t      file_size   = 0;
 
         if (file_handle == nullptr)
         {
@@ -85,7 +85,11 @@ static void glfw_drop_callback(GLFWwindow* window,
                 0L,
                 SEEK_END);
 
-        file_size = ::ftell(file_handle);
+#if defined(_WIN32)
+        file_size = ::_ftelli64(file_handle);
+#else
+        file_size = ::ftello64(file_handle);
+#endif
 
         ::fseek(file_handle,
                 0L,
