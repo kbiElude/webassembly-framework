@@ -192,7 +192,7 @@ int main(int, char**)
     // Create window with graphics context
     window_ptr = glfwCreateWindow(1280,
                                   720,
-                                  "Window",
+                                  g_app_ptr->get_window_title(),
                                   nullptr,  /* monitor */
                                   nullptr); /* share   */
 
