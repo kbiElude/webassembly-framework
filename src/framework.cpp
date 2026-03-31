@@ -184,6 +184,11 @@ int main(int, char**)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API,            GLFW_OPENGL_ES_API);
 
+    if (g_app_ptr != nullptr && g_app_ptr->should_open_maximized() )
+    {
+        glfwWindowHint(GLFW_MAXIMIZED, GLFW_TRUE);
+    }
+    
     // Create window with graphics context
     window_ptr = glfwCreateWindow(1280,
                                   720,
