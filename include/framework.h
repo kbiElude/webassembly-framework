@@ -97,6 +97,11 @@ public:
     {
         /* Stub */
     }
+
+    virtual bool should_open_maximized() const
+    {
+        return false;
+    }
 };
 
 extern FrameworkAppUniquePtr create_app();
