@@ -72,6 +72,11 @@ public:
     virtual void render_frame   (const int& in_width,
                                  const int& in_height) = 0;
 
+    virtual const char* get_window_title() const
+    {
+        return "Window";
+    }
+
     virtual void on_file_dropped_callback(const std::string&   in_filename,
                                           Uint8VectorUniquePtr in_data_u8_vec_ptr)
     {
