@@ -55,7 +55,8 @@ enum class MouseButton : uint8_t
 /* Global functions */
 namespace Framework
 {
-    void report_error(const std::string& in_error);
+    void report_error           (const std::string& in_error);
+    void request_font_atlas_rebuild();
 }
 
 /* App interface */
@@ -93,6 +94,21 @@ public:
 
     virtual void on_mouse_pos_callback(const double& in_x,
                                        const double& in_y)
+    {
+        /* Stub */
+    }
+
+    virtual void on_imgui_init(const float& in_dpi_scale)
+    {
+        /* Stub */
+    }
+
+    virtual void on_dpi_scale_changed(const float& in_dpi_scale)
+    {
+        /* Stub */
+    }
+
+    virtual void pre_frame()
     {
         /* Stub */
     }

@@ -38,8 +38,9 @@
 
 #include <GLFW/glfw3.h>
 
-static auto        g_app_ptr               = create_app();
+static auto        g_app_ptr                     = create_app();
 static std::string g_reported_error_string;
+static bool        g_font_atlas_rebuild_requested = false;
 
 
 void Framework::report_error(const std::string& in_error)
@@ -49,6 +50,20 @@ void Framework::report_error(const std::string& in_error)
         g_reported_error_string = in_error;
     }
 }
+
+void Framework::request_font_atlas_rebuild()
+{
+    g_font_atlas_rebuild_requested = true;
+}
+
+#if !defined(__EMSCRIPTEN__)
+static void glfw_windowcontentscale_callback(GLFWwindow* window,
+                                             float       xscale,
+                                             float       /* yscale */)
+{
+    g_app_ptr->on_dpi_scale_changed(xscale);
+}
+#endif
 
 static void glfw_cursorpos_callback(GLFWwindow* window,
                                     double      x,
@@ -214,6 +229,9 @@ int main(int, char**)
     glfwSetMouseButtonCallback(window_ptr, glfw_mousebutton_callback);
     glfwSetCursorPosCallback  (window_ptr, glfw_cursorpos_callback);
     glfwSetScrollCallback     (window_ptr, glfw_scroll_callback);
+    #if !defined(__EMSCRIPTEN__)
+    glfwSetWindowContentScaleCallback(window_ptr, glfw_windowcontentscale_callback);
+    #endif
 
     glfwMakeContextCurrent(window_ptr);
     glfwSwapInterval      (1); // Enable vsync
@@ -257,6 +275,25 @@ int main(int, char**)
 
     ImGui_ImplOpenGL3_Init("#version 100");
 
+    // Detect OS DPI scale and let the app configure fonts/style accordingly.
+    {
+        float xscale = 1.0f;
+
+        #if defined(__EMSCRIPTEN__)
+        {
+            xscale = static_cast<float>(EM_ASM_DOUBLE({ return window.devicePixelRatio || 1.0; }));
+        }
+        #else
+        {
+            float yscale = 1.0f;
+
+            glfwGetWindowContentScale(window_ptr, &xscale, &yscale);
+        }
+        #endif
+
+        g_app_ptr->on_imgui_init(xscale);
+    }
+
     // Main loop
 #ifdef __EMSCRIPTEN__
     EMSCRIPTEN_MAINLOOP_BEGIN
@@ -265,6 +302,17 @@ int main(int, char**)
 #endif
     {
         glfwPollEvents();
+
+        g_app_ptr->pre_frame();
+
+        if (g_font_atlas_rebuild_requested)
+        {
+            g_font_atlas_rebuild_requested = false;
+
+            ImGui_ImplOpenGL3_DestroyFontsTexture();
+            ImGui::GetIO().Fonts->Build();
+            ImGui_ImplOpenGL3_CreateFontsTexture();
+        }
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame   ();
