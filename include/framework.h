@@ -55,8 +55,9 @@ enum class MouseButton : uint8_t
 /* Global functions */
 namespace Framework
 {
-    void report_error           (const std::string& in_error);
+    void report_error            (const std::string& in_error);
     void request_font_atlas_rebuild();
+    void request_lazy_file_drop  ();
 }
 
 /* App interface */

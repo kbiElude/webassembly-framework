@@ -39,8 +39,9 @@
 #include <GLFW/glfw3.h>
 
 static auto        g_app_ptr                     = create_app();
-static std::string g_reported_error_string;
 static bool        g_font_atlas_rebuild_requested = false;
+static bool        g_lazy_file_drop_requested     = false;
+static std::string g_reported_error_string;
 
 
 void Framework::report_error(const std::string& in_error)
@@ -54,6 +55,11 @@ void Framework::report_error(const std::string& in_error)
 void Framework::request_font_atlas_rebuild()
 {
     g_font_atlas_rebuild_requested = true;
+}
+
+void Framework::request_lazy_file_drop()
+{
+    g_lazy_file_drop_requested = true;
 }
 
 #if !defined(__EMSCRIPTEN__)
@@ -73,67 +79,104 @@ static void glfw_cursorpos_callback(GLFWwindow* window,
                                      y);
 }
 
+/* Returns false if a fatal error was reported and the drop loop should abort. */
+static bool process_dropped_file(const char* in_path_ptr)
+{
+    bool        result      = false;
+    FILE*       file_handle = ::fopen    (in_path_ptr,
+                                          "rb");
+    std::string file_name   = std::string(in_path_ptr);
+    size_t      file_size   = 0;
+
+    if (file_handle == nullptr)
+    {
+        Framework::report_error("Failed to open [" + file_name + "].");
+
+        goto end;
+    }
+
+    ::fseek(file_handle,
+            0L,
+            SEEK_END);
+
+#if defined(_WIN32)
+    file_size = ::_ftelli64(file_handle);
+#else
+    file_size = ::ftello64(file_handle);
+#endif
+
+    ::fseek(file_handle,
+            0L,
+            SEEK_SET);
+
+    if (file_size == 0)
+    {
+        ::fclose(file_handle);
+
+        result = true;
+
+        goto end;
+    }
+
+#if !defined(__EMSCRIPTEN__)
+    if (g_lazy_file_drop_requested)
+    {
+        ::fclose(file_handle);
+
+        g_app_ptr->on_file_dropped_callback(file_name,
+                                            nullptr);
+
+        result = true;
+
+        goto end;
+    }
+#endif
+
+    {
+        Uint8VectorUniquePtr file_data_u8_vec_ptr(new std::vector<uint8_t>(file_size));
+
+        if (::fread(file_data_u8_vec_ptr->data(),
+                    static_cast<size_t>(file_size),
+                    1u,
+                    file_handle) != 1)
+        {
+            ::fclose(file_handle);
+
+            Framework::report_error("Failed to read drag & dropped file [" + file_name + "].");
+
+            goto end;
+        }
+
+        ::fclose(file_handle);
+
+        #if defined(__EMSCRIPTEN__)
+        {
+            ::unlink(in_path_ptr);
+        }
+        #endif
+
+        g_app_ptr->on_file_dropped_callback(file_name,
+                                            std::move(file_data_u8_vec_ptr));
+    }
+
+    result = true;
+end:
+    return result;
+}
+
 static void glfw_drop_callback(GLFWwindow* window,
                                int         n_paths,
                                const char* paths[])
 {
-    /* Cache each file and report to the app. */
     assert(g_app_ptr != nullptr);
 
     for (int32_t n_path = 0;
                  n_path < n_paths;
                ++n_path)
     {
-        FILE*       file_handle = ::fopen(paths[n_path],
-                                          "rb");
-        std::string file_name   = std::string(paths[n_path]);
-        size_t      file_size   = 0;
-
-        if (file_handle == nullptr)
+        if (!::process_dropped_file(paths[n_path]))
         {
-            Framework::report_error("Failed to open [" + file_name + "].");
-
             goto end;
-        }
-
-        ::fseek(file_handle,
-                0L,
-                SEEK_END);
-
-#if defined(_WIN32)
-        file_size = ::_ftelli64(file_handle);
-#else
-        file_size = ::ftello64(file_handle);
-#endif
-
-        ::fseek(file_handle,
-                0L,
-                SEEK_SET);
-
-        if (file_size > 0)
-        {
-            Uint8VectorUniquePtr file_data_u8_vec_ptr(new std::vector<uint8_t>(file_size) );
-
-            if (::fread(file_data_u8_vec_ptr->data(),
-                        static_cast<size_t>       (file_size),
-                        1u,
-                        file_handle) != 1)
-            {
-                Framework::report_error("Failed to read drag & dropped file [" + file_name + "].");
-
-                goto end;
-            }
-
-            ::fclose(file_handle);
-
-            #if defined(__EMSCRIPTEN__)
-            {
-                ::unlink(paths[n_path]);
-            }
-            #endif
-
-            g_app_ptr->on_file_dropped_callback(file_name,
-                                                std::move(file_data_u8_vec_ptr) );
         }
     }
 
