@@ -25,6 +25,7 @@
 */
 #include "program.h"
 #include <assert.h>
+#include <cstring>
 
 Framework::Program::Program(const Shader* in_vs_ptr,
                             const Shader* in_fs_ptr)
