@@ -238,9 +238,15 @@ int main(int, char**)
         goto end;
     }
 
+#if defined(__EMSCRIPTEN__)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_CLIENT_API,            GLFW_OPENGL_ES_API);
+#else
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+    glfwWindowHint(GLFW_CLIENT_API,            GLFW_OPENGL_API);
+#endif
 
     if (g_app_ptr != nullptr && g_app_ptr->should_open_maximized() )
     {
@@ -281,7 +287,7 @@ int main(int, char**)
 
     #if !defined(__EMSCRIPTEN__)
     {
-        int version = gladLoadGLES2Loader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress) );
+        int version = gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress) );
 
         if (version == 0)
         {
@@ -316,7 +322,11 @@ int main(int, char**)
     }
     #endif
 
+#if defined(__EMSCRIPTEN__)
     ImGui_ImplOpenGL3_Init("#version 100");
+#else
+    ImGui_ImplOpenGL3_Init("#version 130");
+#endif
 
     // Detect OS DPI scale and let the app configure fonts/style accordingly.
     {
