@@ -135,6 +135,12 @@ namespace Framework
         //BC5_RG_UNORM   = GL_COMPRESSED_RG_RGTC2,
         BC5_RG_UNORM   = 0x8DBD,
 
+        // ARB_texture_compression_bptc (core since GL 4.2)
+        //BC6H_RGB_SFLOAT = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+        BC6H_RGB_SFLOAT = 0x8E8E,
+        //BC6H_RGB_UFLOAT = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+        BC6H_RGB_UFLOAT = 0x8E8F,
+
         UNKNOWN
     };
 
