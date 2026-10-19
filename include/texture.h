@@ -130,6 +130,10 @@ namespace Framework
         BC4_R_SNORM    = 0x8DBC,
         //BC4_R_UNORM    = GL_COMPRESSED_RED_RGTC1,
         BC4_R_UNORM    = 0x8DBB,
+        //BC5_RG_SNORM   = GL_COMPRESSED_SIGNED_RG_RGTC2,
+        BC5_RG_SNORM   = 0x8DBE,
+        //BC5_RG_UNORM   = GL_COMPRESSED_RG_RGTC2,
+        BC5_RG_UNORM   = 0x8DBD,
 
         UNKNOWN
     };
