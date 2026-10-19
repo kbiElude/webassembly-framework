@@ -125,6 +125,12 @@ namespace Framework
         //BC3_RGBA_UNORM = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
         BC3_RGBA_UNORM = 0x83F3,
 
+        // EXT_texture_compression_rgtc (core since GL 3.0)
+        //BC4_R_SNORM    = GL_COMPRESSED_SIGNED_RED_RGTC1,
+        BC4_R_SNORM    = 0x8DBC,
+        //BC4_R_UNORM    = GL_COMPRESSED_RED_RGTC1,
+        BC4_R_UNORM    = 0x8DBB,
+
         UNKNOWN
     };
 
